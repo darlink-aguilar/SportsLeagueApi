@@ -25,7 +25,7 @@ public class TeamController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet]
+    [HttpGet] //Get: obtener
     public async Task<ActionResult<IEnumerable<TeamResponseDTO>>> GetAll()
     {
         var teams = await _teamService.GetAllAsync();
@@ -45,7 +45,7 @@ public class TeamController : ControllerBase
         return Ok(teamDto);
     }
 
-    [HttpPost]
+    [HttpPost] //Post: crear
     public async Task<ActionResult<TeamResponseDTO>> Create(TeamRequestDTO dto)
     {
         try
@@ -59,13 +59,13 @@ public class TeamController : ControllerBase
                 new { id = responseDto.Id },
                 responseDto);
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException ex) // InvalidOperationException se lanza cuando el equipo ya existe
         {
             return Conflict(new { message = ex.Message });
         }
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id}")] //Put: actualizar
     public async Task<ActionResult> Update(int id, TeamRequestDTO dto)
     {
         try
@@ -74,17 +74,17 @@ public class TeamController : ControllerBase
             await _teamService.UpdateAsync(id, team);
             return NoContent();
         }
-        catch (KeyNotFoundException ex)
+        catch (KeyNotFoundException ex) // KeyNotFoundException se lanza cuando el equipo no existe
         {
             return NotFound(new { message = ex.Message });
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException ex) // InvalidOperationException se lanza cuando el nuevo nombre del equipo ya existe en otro equipo
         {
             return Conflict(new { message = ex.Message });
         }
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}")] //Delete: eliminar
     public async Task<ActionResult> Delete(int id)
     {
         try
@@ -92,7 +92,7 @@ public class TeamController : ControllerBase
             await _teamService.DeleteAsync(id);
             return NoContent();
         }
-        catch (KeyNotFoundException ex)
+        catch (KeyNotFoundException ex) // KeyNotFoundException se lanza cuando el equipo no existe
         {
             return NotFound(new { message = ex.Message });
         }

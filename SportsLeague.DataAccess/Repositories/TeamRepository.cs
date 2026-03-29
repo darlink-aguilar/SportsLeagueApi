@@ -14,7 +14,7 @@ public class TeamRepository : GenericRepository<Team>, ITeamRepository
     public async Task<Team?> GetByNameAsync(string name) // Devuelvo un objeto de tipo Team
     {
         return await _dbSet
-            .FirstOrDefaultAsync(t => t.Name.ToLower() == name.ToLower());
+            .FirstOrDefaultAsync(t => t.Name.ToLower() == name.ToLower()); //Igualamos todo a minúsculas para evitar problemas de mayúsculas/minúsculas en la búsqueda
     }
 
     public async Task<IEnumerable<Team>> GetByCityAsync(string city) // Devuelvo una lista de objetos de tipo Team

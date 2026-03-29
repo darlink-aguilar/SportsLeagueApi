@@ -3,7 +3,7 @@
 public class TeamResponseDTO
 {
     public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty; // el string.Empty es para evitar que el valor sea null, ya que el campo es requerido
     public string City { get; set; } = string.Empty;
     public string Stadium { get; set; } = string.Empty;
     public string? LogoUrl { get; set; }

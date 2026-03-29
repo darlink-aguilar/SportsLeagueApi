@@ -24,10 +24,10 @@ namespace SportsLeague.DataAccess.Context
             // ── Team Configuration ──
             modelBuilder.Entity<Team>(entity =>
             {
-                entity.HasKey(t => t.Id);
+                entity.HasKey(t => t.Id); //Esto significa que es la llave
                 entity.Property(t => t.Name)
-                      .IsRequired()
-                      .HasMaxLength(100);
+                      .IsRequired() // Este campo es obligatorio
+                      .HasMaxLength(100); // El nombre del equipo no puede exceder los 100 caracteres
                 entity.Property(t => t.City)
                       .IsRequired()
                       .HasMaxLength(100);
@@ -38,9 +38,9 @@ namespace SportsLeague.DataAccess.Context
                 entity.Property(t => t.CreatedAt)
                       .IsRequired();
                 entity.Property(t => t.UpdatedAt)
-                      .IsRequired(false);
+                      .IsRequired(false); //Eso significa que no es obligatorio, da igual si tenemos esta línea o no
                 entity.HasIndex(t => t.Name)
-                      .IsUnique();
+                      .IsUnique(); // Esto asegura que no haya dos equipos con el mismo nombre en la base de datos
             });
 
             // ── Player Configuration ──

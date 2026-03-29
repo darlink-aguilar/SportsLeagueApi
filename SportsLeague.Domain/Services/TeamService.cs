@@ -22,7 +22,7 @@ public class TeamService : ITeamService
         return await _teamRepository.GetAllAsync();
     }
 
-    public async Task<Team?> GetByIdAsync(int id)
+    public async Task<Team?> GetByIdAsync(int id) //Obteniendo un team por su ID
     {
         _logger.LogInformation("Retrieving team with ID: {TeamId}", id);
         var team = await _teamRepository.GetByIdAsync(id);
@@ -33,9 +33,10 @@ public class TeamService : ITeamService
         return team;
     }
 
-    public async Task<Team> CreateAsync(Team team)
+    public async Task<Team> CreateAsync(Team team) //Creando un nuevo team
     {
         // Validación de negocio: nombre único
+        // Antes de crear un nuevo equipo, verificamos si ya existe otro equipo con el mismo nombre para evitar duplicados
         var existingTeam = await _teamRepository.GetByNameAsync(team.Name);
         if (existingTeam != null)
         {
@@ -50,6 +51,7 @@ public class TeamService : ITeamService
 
     public async Task UpdateAsync(int id, Team team)
     {
+        // Validar existencia del equipo
         var existingTeam = await _teamRepository.GetByIdAsync(id);
         if (existingTeam == null)
         {
@@ -81,6 +83,7 @@ public class TeamService : ITeamService
 
     public async Task DeleteAsync(int id)
     {
+        // Verificamos existencia del equipo 
         var exists = await _teamRepository.ExistsAsync(id);
         if (!exists)
         {
