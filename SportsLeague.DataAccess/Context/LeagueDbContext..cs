@@ -15,6 +15,7 @@ namespace SportsLeague.DataAccess.Context
         public DbSet<Referee> Referees => Set<Referee>();
         public DbSet<Tournament> Tournaments => Set<Tournament>();
         public DbSet<TournamentTeam> TournamentTeams => Set<TournamentTeam>();
+        public DbSet<Sponsor> Sponsors => Set<Sponsor>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -128,20 +129,43 @@ namespace SportsLeague.DataAccess.Context
                       .IsRequired(false);
 
                 // Relación con Tournament
-                entity.HasOne(tt => tt.Tournament)
-                      .WithMany(t => t.TournamentTeams)
-                      .HasForeignKey(tt => tt.TournamentId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(tt => tt.Tournament) // Un registro de equipo en torneo tiene un torneo
+                      .WithMany(t => t.TournamentTeams) // Un torneo tiene muchos registros de equipos
+                      .HasForeignKey(tt => tt.TournamentId) // La clave foránea en la tabla de TournamentTeam que apunta al torneo
+                      .OnDelete(DeleteBehavior.Cascade); // Si se borra un torneo, se borran sus registros de equipos (no permite el borrado en cascada)
 
                 // Relación con Team
-                entity.HasOne(tt => tt.Team)
-                      .WithMany(t => t.TournamentTeams)
-                      .HasForeignKey(tt => tt.TeamId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(tt => tt.Team) // Un registro de equipo en torneo tiene un equipo
+                      .WithMany(t => t.TournamentTeams) // Un equipo puede participar en muchos torneos (a través de TournamentTeam)
+                      .HasForeignKey(tt => tt.TeamId) // La clave foránea en la tabla de TournamentTeam que apunta al equipo
+                      .OnDelete(DeleteBehavior.Cascade); // Si se borra un equipo, se borran sus registros de participación en torneos (no permite el borrado en cascada)
 
                 // Índice único compuesto: un equipo solo una vez por torneo
                 entity.HasIndex(tt => new { tt.TournamentId, tt.TeamId })
                       .IsUnique();
+            });
+
+            // ── Sponsor Configuration ──
+            modelBuilder.Entity<Sponsor>(entity =>
+            {
+                entity.HasKey(s => s.Id);
+                entity.Property(s => s.Name)
+                      .IsRequired()
+                      .HasMaxLength(80); 
+                entity.Property(s => s.ContactEmail)
+                      .IsRequired()
+                      .HasMaxLength(80);
+                entity.Property(s => s.Phone) 
+                      .HasMaxLength(80);
+                entity.Property(s => s.WebsiteUrl);
+                entity.Property(s => s.Category)
+                      .IsRequired();
+                entity.Property(s => s.CreatedAt)
+                      .IsRequired();
+                entity.Property(s => s.UpdatedAt)
+                      .IsRequired(false);
+                entity.HasIndex(s => s.Name)
+                      .IsUnique(); // Esto asegura que no haya dos sponsors con el mismo nombre en la base de datos
             });
         }
     }

@@ -7,7 +7,7 @@ namespace SportsLeague.Domain.Interfaces.Services
         // Metodos que vamos a configurar en nuestra capa de servicios para manejar la logica de negocio relacionada con los jugadores
         Task<IEnumerable<Player>> GetAllAsync();
         Task<Player?> GetByIdAsync(int id);
-        Task<IEnumerable<Player>> GetByTeamAsync(int teamId);
+        Task<IEnumerable<Player>> GetByTeamAsync(int teamId); // Para obtener los jugadores de un equipo especifico (FK)
         Task<Player> CreateAsync(Player player);
         Task UpdateAsync(int id, Player player);
         Task DeleteAsync(int id);
