@@ -65,10 +65,10 @@ namespace SportsLeague.DataAccess.Context
                       .IsRequired(false);
 
                 // Relación 1:N con Team
-                entity.HasOne(p => p.Team)
-                      .WithMany(t => t.Players)
-                      .HasForeignKey(p => p.TeamId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(p => p.Team) // Un jugador tiene un equipo
+                      .WithMany(t => t.Players) // Un equipo tiene muchos jugadores
+                      .HasForeignKey(p => p.TeamId) // La clave foránea en la tabla de jugadores que apunta al equipo
+                      .OnDelete(DeleteBehavior.Cascade); // Si se borra un equipo, se borran sus jugadores (no permite el borrado en cascada)
 
                 // Índice único compuesto: número de camiseta único por equipo
                 entity.HasIndex(p => new { p.TeamId, p.Number })

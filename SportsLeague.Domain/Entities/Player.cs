@@ -8,7 +8,7 @@ namespace SportsLeague.Domain.Entities
         public string LastName { get; set; } = string.Empty;
         public DateTime BirthDate { get; set; }
         public int Number { get; set; }
-        public PlayerPosition Position { get; set; } // Este atributo solo puede tener 4 valores
+        public PlayerPosition Position { get; set; }
 
         // Foreign Key
         public int TeamId { get; set; }
