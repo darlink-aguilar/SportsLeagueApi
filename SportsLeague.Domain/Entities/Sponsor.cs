@@ -11,7 +11,7 @@ namespace SportsLeague.Domain.Entities
         public SponsorCategory Category { get; set; }
 
         // Navigation Property - Colección de Tournaments patrocinados
-        //public ICollection<TournamentSponsor> TournamentSponsors { get; set; } = new List<TournamentSponsor>();
+        public ICollection<TournamentSponsor> TournamentSponsors { get; set; } = new List<TournamentSponsor>();
     }
 
 }

@@ -16,6 +16,7 @@ namespace SportsLeague.DataAccess.Context
         public DbSet<Tournament> Tournaments => Set<Tournament>();
         public DbSet<TournamentTeam> TournamentTeams => Set<TournamentTeam>();
         public DbSet<Sponsor> Sponsors => Set<Sponsor>();
+        public DbSet<TournamentSponsor> TournamentSponsors => Set<TournamentSponsor>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -129,7 +130,7 @@ namespace SportsLeague.DataAccess.Context
                       .IsRequired(false);
 
                 // Relación con Tournament
-                entity.HasOne(tt => tt.Tournament) // Un registro de equipo en torneo tiene un torneo
+                entity.HasOne(tt => tt.Tournament) // Un registro de torneoEquipo tiene un torneo
                       .WithMany(t => t.TournamentTeams) // Un torneo tiene muchos registros de equipos
                       .HasForeignKey(tt => tt.TournamentId) // La clave foránea en la tabla de TournamentTeam que apunta al torneo
                       .OnDelete(DeleteBehavior.Cascade); // Si se borra un torneo, se borran sus registros de equipos (no permite el borrado en cascada)
@@ -166,6 +167,36 @@ namespace SportsLeague.DataAccess.Context
                       .IsRequired(false);
                 entity.HasIndex(s => s.Name)
                       .IsUnique(); // Esto asegura que no haya dos sponsors con el mismo nombre en la base de datos
+            });
+
+            // ── TournamentSponsor Configuration ──
+            modelBuilder.Entity<TournamentSponsor>(entity =>
+            {
+                entity.HasKey(ts => ts.Id);
+                entity.Property(ts => ts.ContractAmount)
+                      .IsRequired();
+                entity.Property(ts => ts.JoinedAt)
+                      .IsRequired();
+                entity.Property(ts => ts.CreatedAt)
+                      .IsRequired();
+                entity.Property(ts => ts.UpdatedAt)
+                      .IsRequired(false);
+
+                // Relación con Tournament
+                entity.HasOne(ts => ts.Tournament) // Un registro de TorneoPatrocinador tiene un torneo
+                      .WithMany(t => t.TournamentSponsors) // Un torneo tiene muchos registros de TorneoPatrocinador
+                      .HasForeignKey(ts => ts.TournamentId) // La clave foránea en la tabla de TournamentSponsor que apunta al torneo
+                      .OnDelete(DeleteBehavior.Cascade); // Si se borra un torneo, se borran sus registros de patrocinadores (no permite el borrado en cascada)
+
+                // Relación con Sponsor
+                entity.HasOne(ts => ts.Sponsor) // Un registro de TorneoPatrocinador tiene un patrocinador
+                      .WithMany(s => s.TournamentSponsors) // Un patrocinador puede patrocinar muchos torneos 
+                      .HasForeignKey(ts => ts.SponsorId) // La clave foránea en la tabla de TournamentSponsor que apunta al patrocinador
+                      .OnDelete(DeleteBehavior.Cascade); // Si se borra un patrocinador, se borran sus registros de patrocinio en torneos (no permite el borrado en cascada)
+
+                // Índice único compuesto: un patrocinador solo puede patrocinar un torneo una vez
+                entity.HasIndex(ts => new { ts.TournamentId, ts.SponsorId })
+                      .IsUnique();
             });
         }
     }
