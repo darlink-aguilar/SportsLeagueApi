@@ -58,7 +58,7 @@ public class SponsorService : ISponsorService
 
         // 2- VALIDACIÓN DE FORMATO DE CORREO ELECTRÓNICO (revisar)
         // Verificamos que el correo electrónico proporcionado tenga un formato válido utilizando la clase EmailAddressAttribute
-        var emailValidator = new EmailAddressAttribute();
+        var emailValidator = new EmailAddressAttribute(); // Clase de entity framework para validar formato de email
 
         if (string.IsNullOrWhiteSpace(sponsor.ContactEmail) ||
             !emailValidator.IsValid(sponsor.ContactEmail))
