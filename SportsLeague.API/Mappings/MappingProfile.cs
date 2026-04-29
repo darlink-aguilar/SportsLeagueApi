@@ -35,6 +35,19 @@ namespace SportsLeague.API.Mappings
             // Sponsor mappings
             CreateMap<SponsorRequestDTO, Sponsor>();
             CreateMap<Sponsor, SponsorResponseDTO>();
+
+            // Match mappings
+            CreateMap<MatchRequestDTO, Match>();
+            CreateMap<Match, MatchResponseDTO>()
+                .ForMember(dest => dest.TournamentName, // En el DTO, la propiedad TournamentName se llena con Tournament.Name del objeto original
+                    opt => opt.MapFrom(src => src.Tournament.Name))
+                .ForMember(dest => dest.HomeTeamName,
+                    opt => opt.MapFrom(src => src.HomeTeam.Name))
+                .ForMember(dest => dest.AwayTeamName,
+                    opt => opt.MapFrom(src => src.AwayTeam.Name))
+                .ForMember(dest => dest.RefereeFullName, // Aquí trae el nombre y apellido y los une
+                    opt => opt.MapFrom(src =>
+                        src.Referee.FirstName + " " + src.Referee.LastName));
         }
     }
 }
