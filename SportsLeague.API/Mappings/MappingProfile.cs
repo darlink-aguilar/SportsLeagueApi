@@ -48,6 +48,24 @@ namespace SportsLeague.API.Mappings
                 .ForMember(dest => dest.RefereeFullName, // Aquí trae el nombre y apellido y los une
                     opt => opt.MapFrom(src =>
                         src.Referee.FirstName + " " + src.Referee.LastName));
+
+            // MatchResult mappings
+            CreateMap<MatchResultRequestDTO, MatchResult>();
+            CreateMap<MatchResult, MatchResultResponseDTO>();
+
+            // Goal mappings
+            CreateMap<GoalRequestDTO, Goal>();
+            CreateMap<Goal, GoalResponseDTO>()
+                .ForMember(dest => dest.PlayerName,
+                    opt => opt.MapFrom(src =>
+                        src.Player.FirstName + " " + src.Player.LastName));
+
+            // Card mappings
+            CreateMap<CardRequestDTO, Card>();
+            CreateMap<Card, CardResponseDTO>()
+                .ForMember(dest => dest.PlayerName,
+                    opt => opt.MapFrom(src =>
+                        src.Player.FirstName + " " + src.Player.LastName));
         }
     }
 }

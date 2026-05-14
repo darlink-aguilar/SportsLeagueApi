@@ -19,6 +19,9 @@ namespace SportsLeague.DataAccess.Context
         public DbSet<Sponsor> Sponsors => Set<Sponsor>();
         public DbSet<TournamentSponsor> TournamentSponsors => Set<TournamentSponsor>();
         public DbSet<Match> Matches => Set<Match>();
+        public DbSet<MatchResult> MatchResults => Set<MatchResult>();
+        public DbSet<Goal> Goals => Set<Goal>();
+        public DbSet<Card> Cards => Set<Card>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -242,6 +245,80 @@ namespace SportsLeague.DataAccess.Context
                       .WithMany(r => r.Matches)
                       .HasForeignKey(m => m.RefereeId)
                       .OnDelete(DeleteBehavior.Restrict); // No se puede eliminar un árbitro si tiene partidos asignados
+            });
+
+            // ── MatchResult Configuration ──
+            modelBuilder.Entity<MatchResult>(entity =>
+            {
+                entity.HasKey(mr => mr.Id);
+                entity.Property(mr => mr.HomeGoals)
+                      .IsRequired();
+                entity.Property(mr => mr.AwayGoals)
+                      .IsRequired();
+                entity.Property(mr => mr.Observations)
+                      .HasMaxLength(500);
+                entity.Property(mr => mr.CreatedAt)
+                      .IsRequired();
+                entity.Property(mr => mr.UpdatedAt)
+                      .IsRequired(false);
+
+                // Relación 1:1 con Match
+                entity.HasOne(mr => mr.Match)
+                      .WithOne(m => m.MatchResult) //WithOne para relación 1:1
+                      .HasForeignKey<MatchResult>(mr => mr.MatchId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                // Índice único en MatchId garantiza relación 1:1
+                entity.HasIndex(mr => mr.MatchId)
+                      .IsUnique(); //UK: Unique Key
+            });
+
+            // ── Goal Configuration ──
+            modelBuilder.Entity<Goal>(entity =>
+            {
+                entity.HasKey(g => g.Id);
+                entity.Property(g => g.Minute)
+                      .IsRequired();
+                entity.Property(g => g.Type)
+                      .IsRequired();
+                entity.Property(g => g.CreatedAt)
+                      .IsRequired();
+                entity.Property(g => g.UpdatedAt)
+                      .IsRequired(false);
+
+                entity.HasOne(g => g.Match)
+                      .WithMany(m => m.Goals)
+                      .HasForeignKey(g => g.MatchId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(g => g.Player)
+                      .WithMany(p => p.Goals)
+                      .HasForeignKey(g => g.PlayerId)
+                      .OnDelete(DeleteBehavior.Restrict); // el DeleteBehavior es para evitar que si se borra un jugador, se borren sus goles (no permite el borrado en cascada), sirve como historial
+            });
+
+            // ── Card Configuration ──
+            modelBuilder.Entity<Card>(entity =>
+            {
+                entity.HasKey(c => c.Id);
+                entity.Property(c => c.Minute)
+                      .IsRequired();
+                entity.Property(c => c.Type)
+                      .IsRequired();
+                entity.Property(c => c.CreatedAt)
+                      .IsRequired();
+                entity.Property(c => c.UpdatedAt)
+                      .IsRequired(false);
+
+                entity.HasOne(c => c.Match)
+                      .WithMany(m => m.Cards)
+                      .HasForeignKey(c => c.MatchId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(c => c.Player)
+                      .WithMany(p => p.Cards)
+                      .HasForeignKey(c => c.PlayerId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }
