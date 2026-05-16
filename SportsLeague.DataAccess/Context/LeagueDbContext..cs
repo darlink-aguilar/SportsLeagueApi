@@ -22,6 +22,7 @@ namespace SportsLeague.DataAccess.Context
         public DbSet<MatchResult> MatchResults => Set<MatchResult>();
         public DbSet<Goal> Goals => Set<Goal>();
         public DbSet<Card> Cards => Set<Card>();
+        public DbSet<MatchLineup> MatchLineups => Set<MatchLineup>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -294,7 +295,7 @@ namespace SportsLeague.DataAccess.Context
                 entity.HasOne(g => g.Player)
                       .WithMany(p => p.Goals)
                       .HasForeignKey(g => g.PlayerId)
-                      .OnDelete(DeleteBehavior.Restrict); // el DeleteBehavior es para evitar que si se borra un jugador, se borren sus goles (no permite el borrado en cascada), sirve como historial
+                      .OnDelete(DeleteBehavior.Restrict); // el Restrict es para evitar que si se borra un jugador, se borren sus goles (no permite el borrado en cascada), sirve como historial
             });
 
             // ── Card Configuration ──
@@ -319,6 +320,36 @@ namespace SportsLeague.DataAccess.Context
                       .WithMany(p => p.Cards)
                       .HasForeignKey(c => c.PlayerId)
                       .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // ── MatchLineup Configuration ──
+            modelBuilder.Entity<MatchLineup>(entity =>
+            {
+                entity.HasKey(ml => ml.Id);
+                entity.Property(ml => ml.IsStarter)
+                      .IsRequired();
+                entity.Property(ml => ml.Position)
+                      .IsRequired();
+                entity.Property(ml => ml.CreatedAt)
+                      .IsRequired();
+                entity.Property(ml => ml.UpdatedAt)
+                      .IsRequired(false);
+
+                // Relación con Match
+                entity.HasOne(ml => ml.Match) // Un registro de alineación tiene un partido
+                      .WithMany(m => m.MatchLineups) // Un partido tiene muchos registros de alineación
+                      .HasForeignKey(ml => ml.MatchId) // La clave foránea en la tabla de MatchLineup que apunta al partido
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                // Relación con Player
+                entity.HasOne(ml => ml.Player)
+                      .WithMany(p => p.MatchLineups) // Un jugador puede estar en muchas alineaciones de partidos
+                      .HasForeignKey(ml => ml.PlayerId) // La clave foránea en la tabla de MatchLineup que apunta al jugador
+                      .OnDelete(DeleteBehavior.Restrict); // No se puede eliminar un jugador si tiene registros de alineación (no permite el borrado en cascada)
+
+                // Índice único compuesto: Un jugador no se repite en un partido en especifico 
+                entity.HasIndex(ml => new { ml.MatchId, ml.PlayerId})
+                      .IsUnique();
             });
         }
     }
